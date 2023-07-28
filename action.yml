@@ -24,6 +24,7 @@ runs:
   steps:
     - name: Check if Build Folder Exists
       id: checkBuildFolder
+      shell: cmd
       run: |
         if (Test-Path -Path ${{ inputs.buildPath }}) {
           echo "::set-output name=folderExists::true"
@@ -32,6 +33,7 @@ runs:
         }
 
     - name: Remove Existing Build Folder
+      shell: cmd
       run: |
         $folderExists = '${{ steps.checkBuildFolder.outputs.folderExists }}'
         if ($folderExists -eq "true") {
@@ -39,6 +41,7 @@ runs:
         }
 
     - name: Create Build Folder
+      shell: cmd
       run: mkdir -p ${{ inputs.buildPath }}
 
     - name: Unity Build
