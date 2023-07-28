@@ -25,20 +25,24 @@ runs:
     - name: Check if Build Folder Exists
       id: checkBuildFolder
       shell: cmd
+      env:
+        BUILD_PATH: ${{ inputs.buildPath }}
       run: |
-        if (Test-Path -Path ${{ inputs.buildPath }}) {
+        if exist "%BUILD_PATH%" (
           echo "::set-output name=folderExists::true"
-        } else {
+        ) else (
           echo "::set-output name=folderExists::false"
-        }
+        )
 
     - name: Remove Existing Build Folder
       shell: cmd
+      env:
+        BUILD_FOLDEREXISTS: ${{ steps.checkBuildFolder.outputs.folderExists }}
+        BUILD_PATH: ${{ inputs.buildPath }}
       run: |
-        $folderExists = '${{ steps.checkBuildFolder.outputs.folderExists }}'
-        if ($folderExists -eq "true") {
-          Remove-Item -Recurse -Force ${{ inputs.buildPath }}
-        }
+        if %BUILD_FOLDEREXISTS%==true (
+          rmdir /s /q "%BUILD_PATH%"
+        )
 
     - name: Create Build Folder
       shell: cmd
