@@ -25,10 +25,8 @@ runs:
     - name: Check if Build Folder Exists
       id: checkBuildFolder
       shell: cmd
-      env:
-        BUILD_PATH: ${{ inputs.buildPath }}
       run: |
-        if exist "%BUILD_PATH%" (
+        if exist "${{ inputs.buildPath }}" (
           echo "::set-output name=folderExists::true"
         ) else (
           echo "::set-output name=folderExists::false"
@@ -36,22 +34,20 @@ runs:
 
     - name: Remove Existing Build Folder
       shell: cmd
-      env:
-        BUILD_FOLDEREXISTS: ${{ steps.checkBuildFolder.outputs.folderExists }}
-        BUILD_PATH: ${{ inputs.buildPath }}
       run: |
-        if %BUILD_FOLDEREXISTS%==true (
-          rmdir /s /q "%BUILD_PATH%"
+        set folderExists="${{ steps.checkBuildFolder.outputs.folderExists }}"
+        if "%folderExists%"=="true" (
+          rmdir /s /q "${{ inputs.buildPath }}"
         )
 
     - name: Create Build Folder
       shell: cmd
-      run: mkdir -p ${{ inputs.buildPath }}
+      run: mkdir "${{ inputs.buildPath }}"
 
     - name: Unity Build
       shell: cmd
       run: |
-        "${{ inputs.unityPath }}" -quit -batchmode -projectPath ${{ inputs.projectPath }} -executeMethod ${{ inputs.executeMethod }} -logFile ${{ inputs.extraArgument }} 
+        "${{ inputs.unityPath }}" -quit -batchmode -projectPath . -executeMethod "${{ inputs.executeMethod }}" -logFile "${{ inputs.extraArgument }}"
 
 branding:
   icon: 'cpu'
