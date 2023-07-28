@@ -1,0 +1,51 @@
+name: 'Steam Build For Self-Hosted Runner'
+description: 'Build Unity project for Windows 64-bit platform.'
+
+inputs:
+  unityPath:
+    description: 'The full path to the Unity executable.'
+    required: true
+  buildPath:
+    description: 'The path where the build artifacts will be stored.'
+    required: true
+  executeMethod:
+    description: 'The name of the Unity method to execute during the build.'
+    required: true
+  extraArgument:
+    description: 'Extra arguments to pass to the Unity build command.'
+    required: true
+  projectPath:
+    description: 'The path to the Unity project. Default is the root of the repository.'
+    default: '.'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check if Build Folder Exists
+      id: checkBuildFolder
+      run: |
+        if (Test-Path -Path ${{ inputs.buildPath }}) {
+          echo "::set-output name=folderExists::true"
+        } else {
+          echo "::set-output name=folderExists::false"
+        }
+
+    - name: Remove Existing Build Folder
+      run: |
+        $folderExists = '${{ steps.checkBuildFolder.outputs.folderExists }}'
+        if ($folderExists -eq "true") {
+          Remove-Item -Recurse -Force ${{ inputs.buildPath }}
+        }
+
+    - name: Create Build Folder
+      run: mkdir -p ${{ inputs.buildPath }}
+
+    - name: Unity Build
+      shell: cmd
+      run: |
+        "${{ inputs.unityPath }}" -quit -batchmode -projectPath ${{ inputs.projectPath }} -executeMethod ${{ inputs.executeMethod }} -logFile ${{ inputs.extraArgument }} 
+
+branding:
+  icon: 'cpu'
+  color: 'green'
