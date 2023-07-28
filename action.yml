@@ -1,4 +1,4 @@
-name: 'Steam Build For Self-Hosted Runner'
+name: 'Unity Build For Self-Hosted Runner'
 description: 'Build Unity project for Windows 64-bit platform.'
 
 inputs:
