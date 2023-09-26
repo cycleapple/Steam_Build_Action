@@ -57,10 +57,11 @@ runs:
       shell: cmd
       run: |
         if exist "${{ inputs.buildPath }}\${{ inputs.exeFileName }}.exe" (
-        echo "::set-output name=customFileExists::true"
-        ) else (
-        echo "::set-output name=customFileExists::false"
-        )
+          echo "::set-output name=customFileExists::true"
+          ) else (
+          echo "::set-output name=customFileExists::false"
+          exit 1
+          )
 
 branding:
   icon: 'cpu'
