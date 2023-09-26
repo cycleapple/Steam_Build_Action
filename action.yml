@@ -18,6 +18,9 @@ inputs:
     description: 'The path to the Unity project. Default is the root of the repository.'
     default: '.'
     required: false
+  exeFileName:
+    description: 'The name of the .exe file to check for in the build folder.'
+    required: true
 
 runs:
   using: 'composite'
@@ -48,6 +51,16 @@ runs:
       shell: cmd
       run: |
         "${{ inputs.unityPath }}" -quit -batchmode -projectPath . -executeMethod "${{ inputs.executeMethod }}" -logFile "${{ inputs.extraArgument }}"
+        
+    - name: Check for Custom .exe File
+      id: checkCustomExe
+      shell: cmd
+      run: |
+        if exist "${{ inputs.buildPath }}\${{ inputs.exeFileName }}.exe" (
+        echo "::set-output name=customFileExists::true"
+        ) else (
+        echo "::set-output name=customFileExists::false"
+        )
 
 branding:
   icon: 'cpu'
